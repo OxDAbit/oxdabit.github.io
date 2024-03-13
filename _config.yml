@@ -3,7 +3,7 @@ description: > # this means to ignore newlines until "baseurl:"
   Electronic engineer working wit micro controllers, Raspberry Pi, Arduino, ESP8266, ESP32, Homekit,
   IoT, 3D printers, Linux, Mac OSX... Hungry to keep learning!
 permalink: ':title/'
-baseurl: "/oxdabit.github.io" # the subpath of your site, e.g. /blog
+baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://oxdabit.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 site-twitter: #if your site has a twitter account, enter it here
 
