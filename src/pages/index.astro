@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import IsotipoPlan from '../components/IsotipoPlan.astro';
+import PostRow from '../components/PostRow.astro';
+import ProjectRow from '../components/ProjectRow.astro';
+import { CATEGORIES, CATEGORY_LABELS } from '../content.config';
+import { SITE } from '../lib/site';
+import { homeSchema } from '../lib/schema';
+import { getCategoryCounts, getPosts, getProjects } from '../lib/content';
+
+const posts = (await getPosts()).slice(0, 5);
+const projects = (await getProjects()).slice(0, 3);
+const counts = await getCategoryCounts();
+
+const jsonLd = homeSchema();
+---
+
+<BaseLayout title={SITE.title} description={SITE.description} jsonLd={jsonLd}>
+  <!-- Hero: el isotipo como plano + lista de piezas = categorías -->
+  <section class="wrap grid min-h-[calc(100svh-72px)] items-center gap-12 pb-16 pt-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
+    <div>
+      <h1 class="display text-[clamp(52px,8vw,128px)] max-w-[11ch]">Del boceto al <span class="text-vanilla">plato</span>.</h1>
+      <p class="mt-8 max-w-[38ch] text-[clamp(18px,1.4vw,22px)] leading-[1.5] text-ink/90">
+        Notas y proyectos de software, IA, diseño hardware, impresión&nbsp;3D y cosplay.
+        Lo que funcionó, lo que no, y cómo llegué hasta ahí.
+      </p>
+
+      <ol class="bom mt-12 max-w-[420px] font-mono text-[13px] tracking-[0.04em]" aria-label="Categorías del blog">
+        {CATEGORIES.map((cat, i) => (
+          <li>
+            <a href={`/blog/categoria/${cat}`} data-cat={cat} class="bom-row grid grid-cols-[24px_minmax(0,1fr)_auto] gap-3 border-t border-line py-[7px] hover:text-ink">
+              <span>{i + 1}</span>
+              <span>{CATEGORY_LABELS[cat]}</span>
+              <span class="text-ink-faint">{counts[cat]} {counts[cat] === 1 ? 'entrada' : 'entradas'}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <figure class="mx-auto w-full max-w-[620px]">
+      <IsotipoPlan />
+      <figcaption class="annot mt-2 flex justify-between gap-4 border-t border-line pt-2">
+        <span>Isotipo, vista frontal</span>
+        <span>Escala 5:1</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="wrap pt-16" aria-labelledby="latest">
+    <div class="flex items-end justify-between gap-6 pb-6">
+      <h2 id="latest" class="display text-[clamp(36px,4.5vw,64px)]">Últimas entradas</h2>
+      <a href="/blog" class="shrink-0 pb-2 text-[15px] font-medium underline decoration-1 underline-offset-[6px] hover:text-ink">Ver todo el blog</a>
+    </div>
+    {posts.length > 0 ? (
+      <ul class="border-b border-line">
+        {posts.map((post) => <PostRow post={post} />)}
+      </ul>
+    ) : (
+      <p class="border-y border-line py-6 text-ink-soft">La primera entrada está en el tablero de dibujo.</p>
+    )}
+  </section>
+
+  <section class="wrap pt-28" aria-labelledby="projects">
+    <div class="flex items-end justify-between gap-6 pb-6">
+      <h2 id="projects" class="display text-[clamp(36px,4.5vw,64px)]">En el taller</h2>
+      <a href="/projects" class="shrink-0 pb-2 text-[15px] font-medium underline decoration-1 underline-offset-[6px] hover:text-ink">Todos los proyectos</a>
+    </div>
+    {projects.length > 0 ? (
+      <ul class="border-b border-line">
+        {projects.map((project) => <ProjectRow project={project} />)}
+      </ul>
+    ) : (
+      <p class="border-y border-line py-6 text-ink-soft">Todavía no hay proyectos publicados.</p>
+    )}
+  </section>
+</BaseLayout>
+
+<script>
+  // Al pasar por una fila de la lista se resalta su globo en el plano.
+  const rows = document.querySelectorAll<HTMLElement>('.bom-row');
+  rows.forEach((row) => {
+    const balloon = document.querySelector(`.balloon[data-cat="${row.dataset.cat}"]`);
+    if (!balloon) return;
+    const on = () => balloon.classList.add('is-hot');
+    const off = () => balloon.classList.remove('is-hot');
+    row.addEventListener('mouseenter', on);
+    row.addEventListener('mouseleave', off);
+    row.addEventListener('focus', on);
+    row.addEventListener('blur', off);
+  });
+</script>
+
+<style>
+  .bom-row {
+    color: var(--color-ink-soft);
+    transition: color 0.15s ease;
+  }
+  .bom li:last-child .bom-row {
+    border-bottom: 1px solid var(--color-line);
+  }
+</style>

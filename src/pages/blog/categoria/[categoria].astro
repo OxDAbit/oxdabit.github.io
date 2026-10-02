@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import BlogIndex from '../../../components/BlogIndex.astro';
+import { CATEGORIES, CATEGORY_LABELS, type Category } from '../../../content.config';
+import { getCategoryCounts, getPosts } from '../../../lib/content';
+
+export function getStaticPaths() {
+  return CATEGORIES.map((categoria) => ({ params: { categoria } }));
+}
+
+const categoria = Astro.params.categoria as Category;
+const all = await getPosts();
+const posts = all.filter((p) => p.data.category === categoria);
+const counts = await getCategoryCounts();
+const label = CATEGORY_LABELS[categoria];
+---
+
+<BaseLayout title={label} description={`Entradas sobre ${label} en el blog de 0xDA bit.`}>
+  <BlogIndex posts={posts} active={categoria} counts={counts} total={all.length} />
+</BaseLayout>

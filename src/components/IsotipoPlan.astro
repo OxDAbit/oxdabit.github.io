@@ -1,0 +1,139 @@
+---
+// El isotipo dibujado como plano técnico (escala 5:1), con ejes, cota y
+// globos numerados. Cada globo apunta a una pieza del isotipo y corresponde a
+// una categoría del blog (la lista de piezas está en la portada).
+import { CATEGORIES, CATEGORY_LABELS, type Category } from '../content.config';
+
+// Coordenadas en el viewBox 640×640, centro (320,320). target = pieza señalada.
+const BALLOONS: Record<Category, { target: [number, number]; at: [number, number] }> = {
+  programacion: { target: [407.5, 168.4], at: [452.5, 90.5] },   // arco exterior
+  ia: { target: [320, 320], at: [71, 229] },                      // núcleo
+  hardware: { target: [480, 320], at: [585, 320] },               // terminal derecho
+  'impresion-3d': { target: [387, 481.7], at: [421, 565] },       // arco inferior
+  cosplay: { target: [200, 440], at: [168, 537] },                // terminal inferior
+};
+---
+
+<svg
+  viewBox="0 0 640 640"
+  xmlns="http://www.w3.org/2000/svg"
+  class="plan w-full h-auto"
+  role="img"
+  aria-labelledby="plan-title"
+  fill="none"
+  stroke="currentColor"
+>
+  <title id="plan-title">Isotipo de 0xDA bit dibujado como plano técnico, con un globo numerado por cada categoría del blog</title>
+
+  <!-- Ejes de simetría -->
+  <g class="axis" stroke-width="0.8" stroke-dasharray="14 4 2 4" opacity="0.45">
+    <line x1="110" y1="320" x2="530" y2="320" />
+    <line x1="320" y1="110" x2="320" y2="530" />
+  </g>
+
+  <!-- Cota vertical del diámetro exterior -->
+  <g class="dim" stroke-width="0.8" opacity="0.6">
+    <line class="draw" style="--d:1.1" pathLength="1" x1="320" y1="145" x2="22" y2="145" />
+    <line class="draw" style="--d:1.1" pathLength="1" x1="320" y1="495" x2="22" y2="495" />
+    <line class="draw" style="--d:1.2" pathLength="1" x1="34" y1="151" x2="34" y2="489" />
+    <path d="M34 151 l-4 10 h8 z M34 489 l-4 -10 h8 z" fill="currentColor" stroke="none" class="fade" style="--d:1.5" />
+  </g>
+  <text class="fade label" style="--d:1.5" x="26" y="330" transform="rotate(-90 26 330)" text-anchor="middle">Ø 70</text>
+
+  <!-- Isotipo ×5 -->
+  <g transform="translate(320 320) scale(5)" class="iso">
+    <circle class="draw" style="--d:0" pathLength="1" r="35" stroke-width="0.5" opacity="0.55" />
+    <path class="draw" style="--d:0.25" pathLength="1" d="M 0,-35 A 35,35 0 0,1 24.7,-24.7" stroke-width="0.9" />
+    <path class="draw" style="--d:0.3" pathLength="1" d="M 24.7,24.7 A 35,35 0 0,1 0,35" stroke-width="0.9" />
+    <circle class="draw" style="--d:0.15" pathLength="1" r="24" stroke-width="0.4" opacity="0.6" />
+    <path class="draw" style="--d:0.4" pathLength="1" d="M 0,-24 A 24,24 0 0,1 17,-17" stroke-width="0.8" />
+    <circle class="draw" style="--d:0.3" pathLength="1" r="15" stroke-width="0.4" />
+    <circle class="draw" style="--d:0.45" pathLength="1" r="6" stroke-width="0.3" opacity="0.7" />
+    <circle class="draw" style="--d:0.5" pathLength="1" r="3" stroke-width="0.4" />
+    <g stroke-width="0.3">
+      <rect class="draw" style="--d:0.55" pathLength="1" x="-1.5" y="-15" width="3" height="4" />
+      <rect class="draw" style="--d:0.55" pathLength="1" x="11" y="-1.5" width="4" height="3" />
+      <rect class="draw" style="--d:0.55" pathLength="1" x="-1.5" y="11" width="3" height="4" />
+    </g>
+    <line class="draw" style="--d:0.6" pathLength="1" x1="26" y1="0" x2="32" y2="0" stroke-width="0.35" />
+    <line class="draw" style="--d:0.6" pathLength="1" x1="-18" y1="18" x2="-24" y2="24" stroke-width="0.35" />
+    <circle class="draw" style="--d:0.65" pathLength="1" cx="32" cy="0" r="1.5" stroke-width="0.3" />
+    <circle class="draw" style="--d:0.65" pathLength="1" cx="-24" cy="24" r="1.5" stroke-width="0.3" />
+  </g>
+
+  <!-- Globos -->
+  {CATEGORIES.map((cat, i) => {
+    const { target, at } = BALLOONS[cat];
+    // La línea de referencia termina en el borde del globo, no en su centro
+    const dx = target[0] - at[0];
+    const dy = target[1] - at[1];
+    const len = Math.hypot(dx, dy);
+    const edge = [at[0] + (dx / len) * 15, at[1] + (dy / len) * 15];
+    return (
+      <g class="balloon" data-cat={cat} style={`--d:${1.3 + i * 0.12}`}>
+        <title>{`${i + 1}. ${CATEGORY_LABELS[cat]}`}</title>
+        <line class="draw" pathLength="1" x1={edge[0]} y1={edge[1]} x2={target[0]} y2={target[1]} stroke-width="0.8" />
+        <circle class="fade" cx={target[0]} cy={target[1]} r="2.2" fill="currentColor" stroke="none" />
+        <circle class="draw ring" pathLength="1" cx={at[0]} cy={at[1]} r="15" stroke-width="0.9" />
+        <text class="fade num" x={at[0]} y={at[1] + 4.5} text-anchor="middle">{i + 1}</text>
+      </g>
+    );
+  })}
+</svg>
+
+<style>
+  .plan {
+    color: var(--color-ink);
+    overflow: visible;
+  }
+  .plan text {
+    fill: currentColor;
+    stroke: none;
+    font-family: var(--font-mono);
+  }
+  .label {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    opacity: 0.75;
+  }
+  .num {
+    font-size: 13px;
+  }
+
+  /* Un único momento de movimiento: el plano se traza al cargar */
+  .draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: trace 1.1s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    animation-delay: calc(var(--d, 0) * 0.9s);
+  }
+  .fade {
+    opacity: 0;
+    animation: appear 0.5s ease forwards;
+    animation-delay: calc(var(--d, 0) * 0.9s + 0.6s);
+  }
+  @keyframes trace {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes appear {
+    to { opacity: 1; }
+  }
+  /* Resaltado al pasar sobre la lista de categorías (respuesta a la acción) */
+  .balloon {
+    transition: color 0.2s ease;
+  }
+  .balloon .ring {
+    transition: fill 0.2s ease;
+  }
+  :global(.is-hot) .ring {
+    fill: var(--color-ink);
+  }
+  :global(.is-hot) .num {
+    fill: var(--color-blueprint);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .draw { stroke-dashoffset: 0; animation: none; }
+    .fade { opacity: 1; animation: none; }
+  }
+</style>

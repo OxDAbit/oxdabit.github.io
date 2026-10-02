@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectRow from '../../components/ProjectRow.astro';
+import { getProjects } from '../../lib/content';
+
+const projects = await getProjects();
+---
+
+<BaseLayout title="Projects" description="Proyectos personales de 0xDA bit: homelab, hardware, impresión 3D, cosplay y software.">
+  <section class="wrap pt-16 md:pt-24">
+    <h1 class="display text-[clamp(52px,8vw,128px)]">Proyectos</h1>
+    <p class="mt-8 max-w-[44ch] text-[clamp(18px,1.4vw,22px)] leading-[1.5] text-ink/90">
+      Cosas que he construido o sigo construyendo, con su estado real.
+    </p>
+    {projects.length > 0 ? (
+      <ul class="mt-14 border-b border-line">
+        {projects.map((project) => <ProjectRow project={project} />)}
+      </ul>
+    ) : (
+      <p class="mt-14 border-t border-line pt-6 text-ink-soft">Todavía no hay proyectos publicados.</p>
+    )}
+  </section>
+</BaseLayout>

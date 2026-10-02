@@ -1,0 +1,66 @@
+---
+import { render } from 'astro:content';
+import { getImage } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate } from '../../lib/site';
+import { articleSchema } from '../../lib/schema';
+import { getProjects } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { title, description, pubDate, status, stack, repoUrl, videoUrl, cover, coverAlt } = project.data;
+
+const ogImage = cover ? (await getImage({ src: cover, width: 1200, format: 'jpg' })).src : '/og-default.png';
+const ogImageAlt = cover ? (coverAlt ?? title) : undefined;
+const jsonLd = articleSchema({ path: `/projects/${project.id}`, title, description, image: ogImage, pubDate, tags: stack });
+
+const STATUS_LABEL = { activo: 'En marcha', completado: 'Terminado', archivado: 'Archivado' } as const;
+---
+
+<BaseLayout title={title} description={description} image={ogImage} imageAlt={ogImageAlt} type="article" publishedTime={pubDate} jsonLd={jsonLd}>
+  <article class="wrap pt-16 md:pt-24">
+    <header class="max-w-[1100px]">
+      <a href="/projects" class="annot hover:text-ink">Proyecto</a>
+      <h1 class="display mt-5 text-[clamp(40px,6vw,92px)]">{title}</h1>
+      <p class="mt-8 max-w-[52ch] text-[clamp(18px,1.4vw,22px)] leading-[1.5] text-ink/90">{description}</p>
+    </header>
+
+    <div class="mt-16 grid gap-10 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-16">
+      <aside class="lg:sticky lg:top-8 lg:self-start" aria-label="Ficha del proyecto">
+        <dl class="meta font-mono text-[13px] tracking-[0.04em]">
+          <div><dt>Estado</dt><dd>{STATUS_LABEL[status]}</dd></div>
+          <div><dt>Inicio</dt><dd><time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time></dd></div>
+          {stack.length > 0 && <div><dt>Stack</dt><dd>{stack.map((s) => <span class="block">{s}</span>)}</dd></div>}
+          {repoUrl && <div><dt>Código</dt><dd><a href={repoUrl} class="underline underline-offset-4">Repositorio</a></dd></div>}
+          {videoUrl && <div><dt>Vídeo</dt><dd><a href={videoUrl} class="underline underline-offset-4">Ver vídeo</a></dd></div>}
+        </dl>
+        <a href="/projects" class="mt-6 inline-block text-[15px] font-medium underline decoration-1 underline-offset-[6px]">Volver a proyectos</a>
+      </aside>
+
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .meta > div {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 12px;
+    padding: 8px 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .meta > div:last-child {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .meta dt {
+    color: var(--color-ink-faint);
+  }
+</style>

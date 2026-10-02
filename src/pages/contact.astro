@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import { SOCIAL } from '../lib/site';
+import avatar from '../assets/avatar.jpg';
+---
+
+<BaseLayout title="Contact" description="Cómo contactar con 0xDA bit: redes sociales y GitHub.">
+  <section class="wrap pt-16 md:pt-24">
+    <h1 class="display text-[clamp(52px,8vw,128px)] max-w-[12ch]">Hablemos.</h1>
+    <p class="mt-8 max-w-[44ch] text-[clamp(18px,1.4vw,22px)] leading-[1.5] text-ink/90">
+      ¿Una duda sobre un post, una idea para un proyecto o algo que quieras construir?
+      Escríbeme por cualquiera de estos canales.
+    </p>
+
+    <!-- Retrato redondo, centrado en la pantalla, con un anillo tipo globo de plano -->
+    <figure class="mx-auto mt-16 w-[clamp(180px,42vw,300px)]">
+      <div class="rounded-full border border-line-strong p-2">
+        <Image
+          src={avatar}
+          alt="Memoji de 0xDA bit sacando la lengua"
+          widths={[200, 300, 450, 600]}
+          sizes="(max-width: 714px) 42vw, 300px"
+          class="aspect-square w-full rounded-full bg-ink object-cover object-[50%_40%]"
+        />
+      </div>
+    </figure>
+
+    <ul class="mx-auto mt-16 max-w-[720px] border-b border-line">
+      {SOCIAL.map((s) => (
+        <li class="group relative grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-6 border-t border-line py-5">
+          <a href={s.href} rel="me noopener" class="text-[22px] md:text-[26px] font-bold tracking-[-0.015em] after:absolute after:inset-0 group-hover:underline decoration-1 underline-offset-[6px]">
+            {s.label}
+          </a>
+          <span class="annot">{s.handle}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>

@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { CATEGORY_HEX, CATEGORY_LABELS } from '../content.config';
+import { formatDate } from '../lib/site';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, category } = post.data;
+---
+
+<li class="row group relative grid gap-x-8 gap-y-2 border-t border-line py-6 md:grid-cols-[120px_minmax(0,1fr)_170px]">
+  <time datetime={pubDate.toISOString()} class="annot pt-1.5">{formatDate(pubDate)}</time>
+  <div>
+    <h3 class="text-[22px] md:text-[26px] font-bold leading-[1.15] tracking-[-0.015em]">
+      <a href={`/blog/${post.id}`} class="after:absolute after:inset-0 group-hover:underline decoration-1 underline-offset-[6px]">
+        {title}
+      </a>
+    </h3>
+    <p class="mt-2 max-w-[62ch] text-[16px] leading-relaxed text-ink-soft">{description}</p>
+  </div>
+  <a
+    href={`/blog/categoria/${category}`}
+    class="annot relative z-10 self-start pt-1.5 hover:text-ink md:text-right"
+  >
+    {CATEGORY_HEX[category]} {CATEGORY_LABELS[category]}
+  </a>
+</li>

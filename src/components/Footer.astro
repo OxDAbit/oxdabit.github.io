@@ -1,0 +1,48 @@
+---
+import { SITE, SOCIAL, formatDate } from '../lib/site';
+
+// Pie con forma de cajetín de plano: cada celda es un dato real del sitio.
+const year = new Date().getFullYear();
+const built = formatDate(new Date());
+---
+
+<footer class="wrap relative z-10 mt-32 pb-10">
+  <div class="titleblock grid grid-cols-2 md:grid-cols-[1.4fr_1fr_1fr_2fr] border border-line-strong text-ink">
+    <div class="cell col-span-2 md:col-span-1">
+      <span class="annot">Dibujado por</span>
+      <span class="text-[15px]"><b>0xDA</b> bit</span>
+    </div>
+    <div class="cell">
+      <span class="annot">Revisión</span>
+      <span class="font-mono text-[13px]">{built}</span>
+    </div>
+    <div class="cell">
+      <span class="annot">Feed</span>
+      <a href="/rss.xml" class="font-mono text-[13px] underline-offset-4 hover:underline">rss.xml</a>
+    </div>
+    <div class="cell col-span-2 md:col-span-1">
+      <span class="annot">Redes</span>
+      <ul class="flex flex-wrap gap-x-5 gap-y-1 text-[14px]">
+        {SOCIAL.map((s) => (
+          <li><a href={s.href} rel="me noopener" class="underline-offset-4 hover:underline">{s.label}</a></li>
+        ))}
+      </ul>
+    </div>
+  </div>
+  <p class="annot mt-3">&copy; {year} {SITE.author}</p>
+</footer>
+
+<style>
+  .cell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+    border-right: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-line);
+  }
+  @media (min-width: 768px) {
+    .cell { border-bottom: 0; }
+    .cell:last-child { border-right: 0; }
+  }
+</style>

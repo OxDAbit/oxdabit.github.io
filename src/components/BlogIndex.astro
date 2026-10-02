@@ -1,0 +1,64 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import PostRow from './PostRow.astro';
+import { CATEGORIES, CATEGORY_HEX, CATEGORY_LABELS, type Category } from '../content.config';
+
+interface Props {
+  posts: CollectionEntry<'posts'>[];
+  active?: Category;
+  counts: Record<Category, number>;
+  total: number;
+}
+
+const { posts, active, counts, total } = Astro.props;
+const heading = active ? CATEGORY_LABELS[active] : 'Blog';
+---
+
+<section class="wrap pt-16 md:pt-24">
+  <h1 class="display text-[clamp(52px,8vw,128px)]">{heading}</h1>
+
+  <nav aria-label="Filtrar por categoría" class="mt-10">
+    <ul class="flex flex-wrap gap-x-6 gap-y-3 font-mono text-[13px] tracking-[0.04em]">
+      <li>
+        <a href="/blog" aria-current={!active ? 'page' : undefined} class="filter">
+          Todo <span class="text-ink-faint">{total}</span>
+        </a>
+      </li>
+      {CATEGORIES.map((cat) => (
+        <li>
+          <a href={`/blog/categoria/${cat}`} aria-current={active === cat ? 'page' : undefined} class="filter">
+            <span class="text-ink-faint">{CATEGORY_HEX[cat]}</span> {CATEGORY_LABELS[cat]}
+            <span class="text-ink-faint">{counts[cat]}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  {posts.length > 0 ? (
+    <ul class="mt-10 border-b border-line">
+      {posts.map((post) => <PostRow post={post} />)}
+    </ul>
+  ) : (
+    <p class="mt-10 border-t border-line pt-6 text-ink-soft">
+      Todavía no hay entradas de {heading.toLowerCase()}. Mientras tanto, <a href="/blog" class="underline underline-offset-4">mira el resto del blog</a>.
+    </p>
+  )}
+</section>
+
+<style>
+  .filter {
+    display: inline-flex;
+    gap: 0.5em;
+    padding-bottom: 4px;
+    color: var(--color-ink-soft);
+    border-bottom: 1px solid transparent;
+  }
+  .filter:hover {
+    color: var(--color-ink);
+  }
+  .filter[aria-current='page'] {
+    color: var(--color-ink);
+    border-bottom-color: var(--color-ink);
+  }
+</style>

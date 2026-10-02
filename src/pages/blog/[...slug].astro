@@ -1,0 +1,83 @@
+---
+import { render } from 'astro:content';
+import { getImage } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { CATEGORY_HEX, CATEGORY_LABELS } from '../../content.config';
+import { formatDate } from '../../lib/site';
+import { articleSchema } from '../../lib/schema';
+import { getPosts } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, description, pubDate, updatedDate, category, tags, cover, coverAlt } = post.data;
+
+// Imagen al compartir: la portada del post (optimizada a 1200px) o la genérica
+const ogImage = cover ? (await getImage({ src: cover, width: 1200, format: 'jpg' })).src : '/og-default.png';
+const ogImageAlt = cover ? (coverAlt ?? title) : undefined;
+
+// ~220 palabras/minuto para texto técnico
+const words = (post.body ?? '').split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(1, Math.round(words / 220));
+
+const jsonLd = articleSchema({
+  path: `/blog/${post.id}`,
+  title,
+  description,
+  image: ogImage,
+  pubDate,
+  updatedDate,
+  tags,
+  section: CATEGORY_LABELS[category],
+});
+---
+
+<BaseLayout title={title} description={description} image={ogImage} imageAlt={ogImageAlt} type="article" publishedTime={pubDate} modifiedTime={updatedDate} jsonLd={jsonLd}>
+  <article class="wrap pt-16 md:pt-24">
+    <header class="max-w-[1100px]">
+      <a href={`/blog/categoria/${category}`} class="annot hover:text-ink">
+        {CATEGORY_HEX[category]} {CATEGORY_LABELS[category]}
+      </a>
+      <h1 class="display mt-5 text-[clamp(40px,6vw,92px)]">{title}</h1>
+      <p class="mt-8 max-w-[52ch] text-[clamp(18px,1.4vw,22px)] leading-[1.5] text-ink/90">{description}</p>
+    </header>
+
+    <div class="mt-16 grid gap-10 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-16">
+      <aside class="lg:sticky lg:top-8 lg:self-start" aria-label="Datos de la entrada">
+        <dl class="meta font-mono text-[13px] tracking-[0.04em]">
+          <div><dt>Publicado</dt><dd><time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time></dd></div>
+          {updatedDate && <div><dt>Revisado</dt><dd><time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time></dd></div>}
+          <div><dt>Lectura</dt><dd>{minutes} min</dd></div>
+          {tags.length > 0 && (
+            <div><dt>Etiquetas</dt><dd class="flex flex-wrap gap-x-3">{tags.map((t) => <span>#{t}</span>)}</dd></div>
+          )}
+        </dl>
+        <a href="/blog" class="mt-6 inline-block text-[15px] font-medium underline decoration-1 underline-offset-[6px]">Volver al blog</a>
+      </aside>
+
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .meta > div {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 12px;
+    padding: 8px 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .meta > div:last-child {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .meta dt {
+    color: var(--color-ink-faint);
+  }
+</style>
