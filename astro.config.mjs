@@ -7,7 +7,7 @@ import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://oxdabit.github.io',
+  site: 'https://oxdabit.com',
   trailingSlash: 'never',
   // Genera /blog.html en vez de /blog/index.html: GitHub Pages sirve /blog sin
   // redirigir a /blog/, coherente con trailingSlash: 'never'.

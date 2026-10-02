@@ -1,8 +1,8 @@
 # 0xDA bit — blog personal
 
 Blog sobre software, IA, diseño hardware, impresión 3D, cosplay y proyectos.
-Construido con [Astro](https://astro.build) + Tailwind CSS v4 y desplegado en
-GitHub Pages: <https://oxdabit.github.io>.
+Construido con [Astro](https://astro.build) + Tailwind CSS v4 y publicado en
+<https://oxdabit.com> (GitHub Pages con dominio propio, DNS en Cloudflare).
 
 ## Desarrollo
 
@@ -22,5 +22,9 @@ npm run build    # ./dist
 
 ## Despliegue
 
-Cada push a `master` ejecuta `.github/workflows/deploy.yml`. En el repo hay que
-tener *Settings → Pages → Source: GitHub Actions*.
+Cada push a `master` ejecuta `.github/workflows/deploy.yml`, que construye el
+sitio y lo publica en GitHub Pages (*Settings → Pages → Source: GitHub Actions*,
+*Custom domain: oxdabit.com*). `public/CNAME` declara el dominio.
+
+DNS (Cloudflare, solo DNS, sin proxy): 4 registros `A` de `oxdabit.com` a las IPs
+de GitHub Pages y `www` como `CNAME` a `oxdabit.github.io`.

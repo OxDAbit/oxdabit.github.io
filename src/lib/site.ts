@@ -4,7 +4,7 @@ export const SITE = {
     'Blog personal de 0xDA bit: software, IA, diseño hardware, impresión 3D, cosplay y los proyectos que salen de mezclarlo todo.',
   author: '0xDA bit',
   locale: 'es-ES',
-  url: 'https://oxdabit.github.io',
+  url: 'https://oxdabit.com',
 };
 
 export const NAV = [

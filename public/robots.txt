@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://oxdabit.github.io/sitemap-index.xml
+Sitemap: https://oxdabit.com/sitemap-index.xml
