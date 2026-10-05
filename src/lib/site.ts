@@ -10,8 +10,8 @@ export const SITE = {
 export const NAV = [
   { label: 'Home', href: '/' },
   { label: 'Blog', href: '/blog' },
-  { label: 'Projects', href: '/projects' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Proyectos', href: '/projects' },
+  { label: 'Contacto', href: '/contact' },
 ];
 
 export const SOCIAL = [
